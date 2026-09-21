@@ -51,4 +51,7 @@ export type ToolCategory =
   | 'Código'
   | 'Productividad'
   | 'Diseño'
-  | 'Análisis';
+  | 'Análisis'
+  | 'Marketing'
+  | 'Educación'
+  | 'Investigación';

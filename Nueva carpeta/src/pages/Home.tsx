@@ -20,7 +20,12 @@ export default function Home() {
     <>
       <Helmet>
         <title>NEXA AI — Descubre, compara y aprende IA en español</title>
-        <meta name="description" content="La plataforma en español para descubrir, comparar y aprender a usar las mejores herramientas de inteligencia artificial." />
+        <meta name="description" content="La plataforma en español para descubrir, comparar y aprender a usar las mejores herramientas de inteligencia artificial. Guías, comparativas y tutoriales." />
+        <meta property="og:title" content="NEXA AI — Descubre, compara y aprende IA en español" />
+        <meta property="og:description" content="Guías, comparativas y tutoriales sobre IA en español. Catálogo de herramientas analizadas." />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="canonical" href="https://nexa-ai.es/" />
       </Helmet>
 
       {/* Hero */}

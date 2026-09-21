@@ -40,6 +40,11 @@ export default function Articles() {
       <Helmet>
         <title>Artículos sobre IA — NEXA AI</title>
         <meta name="description" content="Guías, comparativas, tutoriales y noticias sobre inteligencia artificial en español." />
+        <meta property="og:title" content="Artículos sobre IA — NEXA AI" />
+        <meta property="og:description" content="Guías, comparativas, tutoriales y noticias sobre inteligencia artificial en español." />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="canonical" href="https://nexa-ai.es/articulos" />
       </Helmet>
 
       <section className="pt-24 pb-8 border-b border-ink-800/60 bg-gradient-to-b from-primary-950/10 to-transparent">

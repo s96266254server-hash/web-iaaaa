@@ -2,12 +2,30 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Wrench, Search, Filter, Star } from 'lucide-react';
-import { aiTools } from '../data/aiTools';
+import { aiTools, fuzzySearchTools } from '../data/aiTools';
 import ToolCard from '../components/ToolCard';
 import type { ToolCategory } from '../types';
 
-const categories: ('Todos' | ToolCategory)[] = ['Todos', 'Texto', 'Imagen', 'Video', 'Audio', 'Código', 'Productividad', 'Diseño', 'Análisis'];
+const categories: ('Todos' | ToolCategory)[] = [
+  'Todos', 'Texto', 'Imagen', 'Video', 'Audio', 'Código',
+  'Productividad', 'Diseño', 'Análisis', 'Marketing', 'Educación', 'Investigación',
+];
 const pricingFilters = ['Todos', 'Gratis', 'Freemium', 'De pago'] as const;
+
+const categoryDescriptions: Record<string, string> = {
+  'Todos': 'Catálogo completo de herramientas de inteligencia artificial analizadas en español.',
+  'Texto': 'Herramientas de IA para generar, redactar, corregir y traducir texto. ChatGPT, Claude, Jasper y más.',
+  'Imagen': 'Generadores de imágenes con IA: Midjourney, DALL·E, Stable Diffusion, Leonardo AI y más.',
+  'Video': 'Herramientas de IA para crear y editar vídeo: Runway, Sora, HeyGen, Synthesia y más.',
+  'Audio': 'IA para generación de voz, música y transcripción: ElevenLabs, Suno, Whisper y más.',
+  'Código': 'Asistentes de programación con IA: GitHub Copilot, Cursor, Claude Code, Bolt y más.',
+  'Productividad': 'Herramientas de IA para reuniones, notas y automatización: Fireflies, Otter, Zapier y más.',
+  'Diseño': 'IA para diseño gráfico, presentaciones y UI: Figma AI, Canva, Gamma, Galileo y más.',
+  'Análisis': 'IA para análisis de datos y business intelligence: Tableau, Julius AI, Glean y más.',
+  'Marketing': 'Herramientas de IA para SEO, copywriting y marketing digital: Surfer SEO, SEMrush y más.',
+  'Educación': 'IA para aprendizaje, tutoría e idiomas: Khanmigo, Duolingo Max, Consensus y más.',
+  'Investigación': 'IA para investigación académica y científica: Consensus, Elicit, Perplexity y más.',
+};
 
 export default function AITools() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,16 +34,11 @@ export default function AITools() {
   const [pricing, setPricing] = useState<string>('Todos');
 
   const filtered = useMemo(() => {
-    return aiTools.filter((t) => {
+    const searchResults = search.trim() ? fuzzySearchTools(search) : aiTools;
+    return searchResults.filter((t) => {
       const matchesCategory = activeCategory === 'Todos' || t.category === activeCategory;
       const matchesPricing = pricing === 'Todos' || t.pricing === pricing;
-      const lowerSearch = search.toLowerCase();
-      const matchesSearch =
-        !search ||
-        t.name.toLowerCase().includes(lowerSearch) ||
-        t.tagline.toLowerCase().includes(lowerSearch) ||
-        t.description.toLowerCase().includes(lowerSearch);
-      return matchesCategory && matchesPricing && matchesSearch;
+      return matchesCategory && matchesPricing;
     });
   }, [activeCategory, pricing, search]);
 
@@ -35,11 +48,21 @@ export default function AITools() {
     setSearchParams(searchParams);
   };
 
+  const pageTitle = activeCategory === 'Todos'
+    ? 'Herramientas de IA — NEXA AI'
+    : `Herramientas de IA de ${activeCategory} — NEXA AI`;
+  const pageDescription = categoryDescriptions[activeCategory] || categoryDescriptions['Todos'];
+
   return (
     <>
       <Helmet>
-        <title>Herramientas de IA — NEXA AI</title>
-        <meta name="description" content="Catálogo de las mejores herramientas de inteligencia artificial, analizadas y comparadas en español." />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="canonical" href={`https://nexa-ai.es/herramientas${activeCategory !== 'Todos' ? `?categoria=${activeCategory}` : ''}`} />
       </Helmet>
 
       <section className="pt-24 pb-8 border-b border-ink-800/60 bg-gradient-to-b from-accent-950/10 to-transparent">
@@ -47,9 +70,11 @@ export default function AITools() {
           <div className="flex items-center gap-2 text-accent-400 text-sm font-medium mb-3">
             <Wrench className="w-4 h-4" /> Herramientas
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Catálogo de herramientas IA</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            {activeCategory === 'Todos' ? 'Catálogo de herramientas IA' : `Herramientas de IA de ${activeCategory}`}
+          </h1>
           <p className="text-lg text-ink-400 max-w-2xl">
-            Análisis honesto de las mejores herramientas de inteligencia artificial. Compara características, precios y casos de uso.
+            {pageDescription}
           </p>
           <div className="flex flex-wrap gap-4 mt-6 text-sm text-ink-400">
             <span className="flex items-center gap-1.5"><Star className="w-4 h-4 text-warning-400 fill-current" /> Valoraciones reales</span>
@@ -67,7 +92,7 @@ export default function AITools() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar herramientas..."
+              placeholder="Buscar herramientas... (ej: crear videos, programar con IA, hacer logos)"
               className="w-full pl-10 pr-4 py-3 rounded-xl bg-ink-900/60 border border-ink-700/60 text-white placeholder-ink-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/40 transition-all"
             />
           </div>

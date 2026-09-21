@@ -1,7 +1,8 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Star, Check, X, ExternalLink, ThumbsUp, Target, Sparkles } from 'lucide-react';
-import { aiTools } from '../data/aiTools';
+import { ArrowLeft, Star, Check, X, ExternalLink, ThumbsUp, Target, Sparkles, Wrench } from 'lucide-react';
+import { aiTools, getRelatedTools } from '../data/aiTools';
+import { articles } from '../data/articles';
 import Newsletter from '../components/Newsletter';
 
 const pricingColors: Record<string, string> = {
@@ -16,13 +17,49 @@ export default function ToolDetail() {
 
   if (!tool) return <Navigate to="/herramientas" replace />;
 
-  const related = aiTools.filter((t) => t.id !== tool.id && t.category === tool.category).slice(0, 3);
+  const related = getRelatedTools(tool.id, 3);
+  const relatedArticles = articles
+    .filter((a) => a.tags.some((t) =>
+      tool.name.toLowerCase().includes(t.toLowerCase()) ||
+      tool.category.toLowerCase().includes(t.toLowerCase()) ||
+      t.toLowerCase().includes(tool.category.toLowerCase())
+    ))
+    .slice(0, 3);
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: tool.name,
+    description: tool.description,
+    applicationCategory: 'AI',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: tool.pricing === 'Gratis' ? '0' : tool.pricing === 'Freemium' ? '0' : '',
+      priceCurrency: 'EUR',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: tool.rating,
+      bestRating: '5',
+      worstRating: '1',
+    },
+  };
 
   return (
     <>
       <Helmet>
-        <title>{tool.name} — Análisis | NEXA AI</title>
-        <meta name="description" content={tool.tagline} />
+        <title>{tool.name} — Análisis y características | NEXA AI</title>
+        <meta name="description" content={`${tool.tagline}. ${tool.description.slice(0, 120)}`} />
+        <meta property="og:title" content={`${tool.name} — Análisis | NEXA AI`} />
+        <meta property="og:description" content={tool.tagline} />
+        <meta property="og:type" content="article" />
+        <meta property="og:image" content={tool.logo} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${tool.name} — Análisis | NEXA AI`} />
+        <meta name="twitter:description" content={tool.tagline} />
+        <link rel="canonical" href={`https://nexa-ai.es/herramientas/${tool.slug}`} />
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
       <section className="pt-24 pb-8 bg-gradient-to-b from-primary-950/10 to-transparent border-b border-ink-800/60">
@@ -112,6 +149,29 @@ export default function ToolDetail() {
                 </ul>
               </div>
             </div>
+
+            {relatedArticles.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-4">Artículos relacionados</h2>
+                <div className="space-y-3">
+                  {relatedArticles.map((a) => (
+                    <Link
+                      key={a.id}
+                      to={`/articulos/${a.slug}`}
+                      className="group flex items-center gap-4 p-4 rounded-xl bg-ink-900/50 border border-ink-800/60 hover:border-primary-500/30 transition-all"
+                    >
+                      <div className="w-14 h-14 rounded-lg overflow-hidden bg-ink-800 flex-shrink-0">
+                        <img src={a.coverImage} alt={a.title} className="w-full h-full object-cover" loading="lazy" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-white group-hover:text-primary-300 transition-colors text-sm truncate">{a.title}</h3>
+                        <p className="text-xs text-ink-500 mt-1">{a.category} · {a.readingTime} min</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-6">
@@ -148,6 +208,12 @@ export default function ToolDetail() {
               >
                 Probar {tool.name} <ExternalLink className="w-4 h-4" />
               </a>
+              <Link
+                to={`/herramientas?categoria=${tool.category}`}
+                className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-ink-800/60 hover:bg-ink-800 text-ink-300 hover:text-white text-sm font-medium transition-all"
+              >
+                <Wrench className="w-3.5 h-3.5" /> Ver más herramientas de {tool.category}
+              </Link>
             </div>
           </div>
         </div>
