@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ink-950 text-ink-100 font-sans antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-ink-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-ink-700 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-ink-600;
+}
+
+@layer components {
+  .container-prose {
+    @apply max-w-3xl mx-auto px-5 sm:px-6;
+  }
+  .container-wide {
+    @apply max-w-7xl mx-auto px-5 sm:px-6 lg:px-8;
+  }
+  .prose-article h2 {
+    @apply text-2xl font-bold text-white mt-10 mb-4 leading-tight;
+  }
+  .prose-article h3 {
+    @apply text-xl font-semibold text-white mt-8 mb-3;
+  }
+  .prose-article p {
+    @apply text-ink-300 leading-relaxed mb-5 text-lg;
+  }
+  .prose-article ul {
+    @apply list-disc list-inside space-y-2 mb-5 text-ink-300 text-lg;
+  }
+  .prose-article ol {
+    @apply list-decimal list-inside space-y-2 mb-5 text-ink-300 text-lg;
+  }
+  .prose-article a {
+    @apply text-primary-400 hover:text-primary-300 underline underline-offset-2;
+  }
+  .prose-article blockquote {
+    @apply border-l-4 border-primary-600 pl-5 italic text-ink-400 my-6 text-lg;
+  }
+  .prose-article code {
+    @apply font-mono text-sm text-accent-300 bg-ink-800/60 px-1.5 py-0.5 rounded;
+  }
+  .prose-article pre {
+    @apply font-mono text-sm text-ink-200 bg-ink-900 border border-ink-800 rounded-lg p-4 overflow-x-auto my-5;
+  }
+  .prose-article pre code {
+    @apply bg-transparent p-0 text-ink-200;
+  }
+  .prose-article strong {
+    @apply font-semibold text-white;
+  }
+}
